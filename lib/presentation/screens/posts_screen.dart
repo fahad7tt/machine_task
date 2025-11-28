@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:machine_task/presentation/widgets/shimmer_loading.dart';
 import '../../logic/posts_bloc/posts_bloc.dart';
 import '../../logic/posts_bloc/posts_event.dart';
 import '../../logic/posts_bloc/posts_state.dart';
@@ -53,7 +54,7 @@ class _PostsScreenState extends State<PostsScreen> {
       body: BlocBuilder<PostsBloc, PostsState>(
         builder: (context, state) {
           if (state is PostsLoading) {
-            return const LoadingIndicator();
+            return const ShimmerLoading();
           }
 
           if (state is PostsError) {
@@ -123,11 +124,21 @@ class _PostsScreenState extends State<PostsScreen> {
                 context.read<PostsBloc>().add(RefreshPosts());
                 await Future.delayed(const Duration(milliseconds: 500));
               },
-              child: ListView.builder(
+              child: ListView.separated(
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
-                itemCount:
-                    state.hasMore ? state.posts.length + 1 : state.posts.length,
+                itemCount: state.hasMore 
+                    ? state.posts.length + 1 
+                    : state.posts.length,
+                separatorBuilder: (context, index) {
+                  if (index >= state.posts.length) {
+                    return const SizedBox.shrink();
+                  }
+                  return const Divider(
+                    height: 0.6,
+                    thickness: 0.6,
+                  );
+                },
                 itemBuilder: (context, index) {
                   if (index >= state.posts.length) {
                     return const LoadingIndicator();
