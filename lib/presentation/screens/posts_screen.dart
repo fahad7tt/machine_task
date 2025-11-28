@@ -45,9 +45,10 @@ class _PostsScreenState extends State<PostsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Posts'),
-        centerTitle: true,
-        elevation: 2,
+        title: const Text('Posts', style: TextStyle(fontWeight: FontWeight.bold)),
+        centerTitle: false,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
       ),
       body: BlocBuilder<PostsBloc, PostsState>(
         builder: (context, state) {
@@ -60,39 +61,56 @@ class _PostsScreenState extends State<PostsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.red[300],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Oops! Something went wrong',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
+                  // Yellow warning icon with black exclamation
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: const BoxDecoration(
+                      color: Colors.amber,
+                      shape: BoxShape.circle,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Text(
-                      state.message,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
+                    child: const Icon(
+                      Icons.warning_amber_rounded,
+                      size: 60,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 24),
-                  ElevatedButton.icon(
+                  Text(
+                    'Failed to Load Posts',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Network error. Please check your connection.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
                     onPressed: () {
                       context.read<PostsBloc>().add(LoadInitialPosts());
                     },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            4),
+                      ),
+                    ),
+                    child: const Text('Retry'),
                   ),
                 ],
               ),
@@ -108,9 +126,8 @@ class _PostsScreenState extends State<PostsScreen> {
               child: ListView.builder(
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: state.hasMore 
-                    ? state.posts.length + 1 
-                    : state.posts.length,
+                itemCount:
+                    state.hasMore ? state.posts.length + 1 : state.posts.length,
                 itemBuilder: (context, index) {
                   if (index >= state.posts.length) {
                     return const LoadingIndicator();
